@@ -1,0 +1,1223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Acceso_Planillas {
+  id            Int          @id @default(autoincrement())
+  idEmpresa     String?      @db.VarChar(70)
+  idColaborador String?      @db.VarChar(70)
+  accesos       String?      @db.MediumText
+  Empresa       Empresa?     @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Acceso_Planillas_ibfk_1")
+  Colaborador   Colaborador? @relation(fields: [idColaborador], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Acceso_Planillas_ibfk_2")
+
+  @@index([idColaborador], map: "idColaborador")
+  @@index([idEmpresa], map: "idEmpresa")
+}
+
+model Anticipos {
+  id                 Int       @id @default(autoincrement())
+  idPlaza            Int?
+  idPlanilla         Int?
+  anticipo           Decimal?  @db.Decimal(10, 2)
+  interes            Decimal?  @db.Decimal(10, 2)
+  inicioPeriodoCobro DateTime? @db.DateTime(0)
+  saldo              Decimal?  @db.Decimal(10, 2)
+  estado             Boolean?
+  Plaza              Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Anticipos_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model AnticiposPendientes {
+  id         Int      @id @default(autoincrement())
+  idAnticipo Int?
+  Saldo      Decimal? @db.Decimal(10, 2)
+  cuota      Decimal? @db.Decimal(10, 2)
+  estado     Boolean?
+}
+
+model Area_Departamento {
+  id                 String   @id @db.VarChar(70)
+  nombreDepartamento String?  @db.VarChar(100)
+  idEmpresa          String?  @db.VarChar(70)
+  Empresa            Empresa? @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Area_Departamento_ibfk_1")
+
+  @@index([idEmpresa], map: "idEmpresa")
+}
+
+model Banco {
+  id                Int                 @id @default(autoincrement())
+  nombre            String?             @db.VarChar(255)
+  Planilla          Planilla[]
+  PlanillasB14      PlanillasB14[]
+  Plaza             Plaza[]
+  PlazaPlanillaPago PlazaPlanillaPago[]
+}
+
+model Centro {
+  id                       Int           @id @default(autoincrement())
+  nombreCentro             String?       @db.VarChar(100)
+  direccionCentro          String?       @db.VarChar(100)
+  zona                     Int?
+  telefonosCentro          String?       @db.VarChar(40)
+  faxCentro                String?       @db.VarChar(40)
+  nombreContactoCentro     String?       @db.VarChar(50)
+  correoCentro             String?       @db.VarChar(50)
+  departamentoCentro       Int?
+  municipioCentro          Int?
+  codigoActividadEconomica String?       @db.VarChar(45)
+  idEmpresa                String?       @db.VarChar(70)
+  correlativo              Int?
+  Departamento             Departamento? @relation(fields: [departamentoCentro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Centro_ibfk_1")
+  Municipio                Municipio?    @relation(fields: [municipioCentro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Centro_ibfk_2")
+  Empresa                  Empresa?      @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Centro_ibfk_3")
+  Plaza                    Plaza[]
+
+  @@index([departamentoCentro], map: "departamentoCentro")
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([municipioCentro], map: "municipioCentro")
+}
+
+model Colaborador {
+  id                                                            String                                   @id @db.VarChar(70)
+  primerNombre                                                  String?                                  @db.VarChar(255)
+  segundoNombre                                                 String?                                  @db.VarChar(255)
+  otrosNombres                                                  String?                                  @db.VarChar(255)
+  primerApellido                                                String?                                  @db.VarChar(255)
+  segundoApellido                                               String?                                  @db.VarChar(255)
+  apellidoCasada                                                String?                                  @db.VarChar(255)
+  nacionalidad                                                  Int?
+  departamentoNacimiento                                        Int?
+  municipioNacimiento                                           Int?
+  fechaNacimiento                                               DateTime?                                @db.DateTime(0)
+  codigoNacimiento                                              String?                                  @db.VarChar(255)
+  genero                                                        String?                                  @db.VarChar(255)
+  etnia                                                         String?                                  @db.VarChar(255)
+  religion                                                      String?                                  @db.VarChar(255)
+  estadoCivil                                                   String?                                  @db.VarChar(255)
+  direccionDomicilio                                            String?                                  @db.MediumText
+  departamentoDomicilio                                         Int?
+  municipioDomicilio                                            Int?
+  zonaDomicilio                                                 String?                                  @db.VarChar(255)
+  codigoDomicilio                                               String?                                  @db.VarChar(255)
+  telefonoCasa                                                  String?                                  @db.VarChar(255)
+  telefonoCelular                                               String?                                  @db.VarChar(255)
+  telefonoCelular2                                              String?                                  @db.VarChar(255)
+  emailPersonal                                                 String?                                  @db.VarChar(255)
+  emailEmpresa                                                  String?                                  @db.VarChar(255)
+  personasQueDependenDirectamente                               Int?
+  personasQueDependenIndirectamente                             Int?
+  personasQueVivenConUsted                                      Int?
+  lateralidad                                                   String?                                  @db.VarChar(255)
+  tallaPlayera                                                  String?                                  @db.VarChar(255)
+  tallaPantalon                                                 String?                                  @db.VarChar(255)
+  tallaZapatos                                                  String?                                  @db.VarChar(255)
+  dpi                                                           String?                                  @db.VarChar(255)
+  departamentoVecindad                                          Int?
+  municipioVecindad                                             Int?
+  codigoVecindad                                                String?                                  @db.VarChar(255)
+  numeroAfiliacionIgss                                          String?                                  @db.VarChar(100)
+  numeroAfiliacionIrtra                                         String?                                  @db.VarChar(100)
+  jubiladoIgss                                                  Boolean?
+  seguroMedico                                                  Boolean?
+  seguroVida                                                    Boolean?
+  nit                                                           String?                                  @db.VarChar(255)
+  pasaporte                                                     String?                                  @db.VarChar(255)
+  permisoTrabajo                                                String?                                  @db.VarChar(255)
+  licenciaMoto                                                  Boolean?
+  documentoLicenciaMoto                                         String?                                  @db.VarChar(255)
+  fechaVencimientoLicenciaMoto                                  DateTime?                                @db.DateTime(0)
+  licenciaVehiculo                                              Boolean?
+  documentoLicenciaVehiculo                                     String?                                  @db.VarChar(255)
+  claseLicenciaVehiculo                                         String?                                  @db.VarChar(255)
+  fechaVencimientoLicenciaVehiculo                              DateTime?                                @db.DateTime(0)
+  fechaEmisionIrtra                                             DateTime?                                @db.DateTime(0)
+  estatura                                                      String?                                  @db.VarChar(255)
+  peso                                                          String?                                  @db.VarChar(255)
+  colorTez                                                      String?                                  @db.VarChar(255)
+  contextura                                                    String?                                  @db.VarChar(255)
+  colorOjos                                                     String?                                  @db.VarChar(255)
+  tipoCabello                                                   String?                                  @db.VarChar(255)
+  padresYconyuge                                                String?                                  @db.Text
+  hijosYhermanos                                                String?                                  @db.MediumText
+  cantidadHijos                                                 Int?
+  familiaresCompaniaYcontactosEmergencia                        String?                                  @db.MediumText
+  contrasenaUsuario                                             String?                                  @db.VarChar(255)
+  perfilUsuario                                                 Int?
+  foto                                                          String?                                  @db.LongText
+  empresaActiva                                                 String?                                  @db.VarChar(70)
+  estado                                                        String?                                  @db.VarChar(70)
+  fechaInicioRecuex                                             DateTime?                                @db.DateTime(0)
+  Acceso_Planillas                                              Acceso_Planillas[]
+  Pais                                                          Pais?                                    @relation(fields: [nacionalidad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_1")
+  Departamento_Colaborador_departamentoVecindadToDepartamento   Departamento?                            @relation("Colaborador_departamentoVecindadToDepartamento", fields: [departamentoVecindad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_2")
+  Departamento_Colaborador_departamentoNacimientoToDepartamento Departamento?                            @relation("Colaborador_departamentoNacimientoToDepartamento", fields: [departamentoNacimiento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_3")
+  Departamento_Colaborador_departamentoDomicilioToDepartamento  Departamento?                            @relation("Colaborador_departamentoDomicilioToDepartamento", fields: [departamentoDomicilio], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_4")
+  Municipio_Colaborador_municipioNacimientoToMunicipio          Municipio?                               @relation("Colaborador_municipioNacimientoToMunicipio", fields: [municipioNacimiento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_5")
+  Municipio_Colaborador_municipioDomicilioToMunicipio           Municipio?                               @relation("Colaborador_municipioDomicilioToMunicipio", fields: [municipioDomicilio], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_6")
+  Municipio_Colaborador_municipioVecindadToMunicipio            Municipio?                               @relation("Colaborador_municipioVecindadToMunicipio", fields: [municipioVecindad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_7")
+  Empresa                                                       Empresa?                                 @relation(fields: [empresaActiva], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_8")
+  Perfiles                                                      Perfiles?                                @relation(fields: [perfilUsuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Colaborador_ibfk_9")
+  Collaborador_Turno_Denimville                                 Collaborador_Turno_Denimville[]
+  Detalle_Colaborador                                           Detalle_Colaborador[]
+  Licencias_Denimville                                          Licencias_Denimville[]
+  Permisos_Denimville                                           Permisos_Denimville[]
+  Plaza                                                         Plaza[]
+  Solicitud_IRTRA                                               Solicitud_IRTRA[]
+  Suspensiones_Denimville                                       Suspensiones_Denimville[]
+  Suspensiones_Disciplinarias_Denimville                        Suspensiones_Disciplinarias_Denimville[]
+  Vacaciones_Denimville                                         Vacaciones_Denimville[]
+
+  @@index([departamentoDomicilio], map: "departamentoDomicilio")
+  @@index([departamentoNacimiento], map: "departamentoNacimiento")
+  @@index([departamentoVecindad], map: "departamentoVecindad")
+  @@index([empresaActiva], map: "empresaActiva")
+  @@index([municipioDomicilio], map: "municipioDomicilio")
+  @@index([municipioNacimiento], map: "municipioNacimiento")
+  @@index([municipioVecindad], map: "municipioVecindad")
+  @@index([nacionalidad], map: "nacionalidad")
+  @@index([perfilUsuario], map: "perfilUsuario")
+}
+
+model Collaborador_Turno_Denimville {
+  id          Int          @id @default(autoincrement())
+  plaza       Int
+  turno       Int
+  fecha       DateTime?    @db.Date
+  autoriza    String?      @db.VarChar(255)
+  Plaza       Plaza        @relation(fields: [plaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Collaborador_Turno_Denimville_ibfk_1")
+  Turnos      Turnos       @relation(fields: [turno], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Collaborador_Turno_Denimville_ibfk_2")
+  Colaborador Colaborador? @relation(fields: [autoriza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Collaborador_Turno_Denimville_ibfk_3")
+
+  @@index([plaza], map: "Collaborador_Turno_Denimville_ibfk_1")
+  @@index([turno], map: "Collaborador_Turno_Denimville_ibfk_2")
+  @@index([autoriza], map: "Collaborador_Turno_Denimville_ibfk_3")
+}
+
+model Departamento {
+  id                                                               Int           @id @default(autoincrement())
+  nombreDepartamento                                               String?       @db.VarChar(255)
+  igssId                                                           String?       @db.VarChar(2)
+  Centro                                                           Centro[]
+  Colaborador_Colaborador_departamentoVecindadToDepartamento       Colaborador[] @relation("Colaborador_departamentoVecindadToDepartamento")
+  Colaborador_Colaborador_departamentoNacimientoToDepartamento     Colaborador[] @relation("Colaborador_departamentoNacimientoToDepartamento")
+  Colaborador_Colaborador_departamentoDomicilioToDepartamento      Colaborador[] @relation("Colaborador_departamentoDomicilioToDepartamento")
+  Empresa_Empresa_departamentoToDepartamento                       Empresa[]     @relation("Empresa_departamentoToDepartamento")
+  Empresa_Empresa_departamentoActaNombramientoToDepartamento       Empresa[]     @relation("Empresa_departamentoActaNombramientoToDepartamento")
+  Empresa_Empresa_departamentoDomicilioRepresentanteToDepartamento Empresa[]     @relation("Empresa_departamentoDomicilioRepresentanteToDepartamento")
+  Municipio                                                        Municipio[]
+}
+
+model DescuentoBancario {
+  id             Int      @id @default(autoincrement())
+  idPlaza        Int?
+  montoDescuento Decimal? @db.Decimal(10, 2)
+  anotacion      String?  @db.LongText
+  Plaza          Plaza?   @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DescuentoBancario_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Detalle_Colaborador {
+  id                                Int          @id @default(autoincrement())
+  idColaborador                     String?      @db.VarChar(70)
+  medicamento                       String?      @db.Text
+  discapacidad                      String?      @db.VarChar(255)
+  alergiaPenicilina                 Boolean?
+  alergias                          String?      @db.VarChar(255)
+  otrasCondiciones                  String?      @db.VarChar(255)
+  diabetes                          Boolean?
+  vertigo                           Boolean?
+  migrana                           Boolean?
+  problemasCardiacos                Boolean?
+  presionAlta                       Boolean?
+  dolorColumna                      Boolean?
+  convulsiones                      Boolean?
+  asma                              Boolean?
+  desmayos                          Boolean?
+  lentes                            Boolean?
+  aparatoAuditivo                   Boolean?
+  tipoSangre                        String?      @db.VarChar(5)
+  lunaresCicatrices                 String?      @db.Text
+  transfucionSanguinea              Boolean?
+  motivoRechazoTransfucionSanguinea String?      @db.MediumText
+  enfermedadTipoLaboral             String?      @db.VarChar(255)
+  accidentesLaborales               String?      @db.VarChar(255)
+  bebidasAlcoholicas                String?      @db.VarChar(20)
+  deportesExtremos                  String?      @db.Text
+  maquinasYHerramientas             String?      @db.Text
+  manejaVehiculo                    Boolean?
+  poseeVehiculo                     Boolean?
+  tipoVehiculo                      String?      @db.VarChar(100)
+  modeloVehiculo                    String?      @db.VarChar(100)
+  placaVehiculo                     String?      @db.VarChar(100)
+  manejaMotocicleta                 Boolean?
+  poseeMotocicleta                  Boolean?
+  tipoMotocicleta                   String?      @db.VarChar(100)
+  modeloMotocicleta                 String?      @db.VarChar(100)
+  placaMotocicleta                  String?      @db.VarChar(100)
+  detalleTrabajosExtranjeros        String?      @db.MediumText
+  profesion                         String?      @db.VarChar(100)
+  nivelAcademico                    String?      @db.VarChar(100)
+  idiomas                           String?      @db.Text
+  recordEscolar                     String?      @db.Text
+  estudiosActuales                  String?      @db.Text
+  comunidadLinguistica              String?      @db.VarChar(20)
+  Colaborador                       Colaborador? @relation(fields: [idColaborador], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Detalle_Colaborador_ibfk_1")
+
+  @@index([idColaborador], map: "idColaborador")
+}
+
+model Empresa {
+  id                                                                    String                  @id @db.VarChar(70)
+  razonSocial                                                           String?                 @db.VarChar(255)
+  nit                                                                   String?                 @db.VarChar(255)
+  logo                                                                  String?                 @db.LongText
+  departamento                                                          Int?
+  municipio                                                             Int?
+  direccion                                                             String?                 @db.VarChar(255)
+  telefono                                                              String?                 @db.VarChar(255)
+  email                                                                 String?                 @db.VarChar(255)
+  paginaWeb                                                             String?                 @db.VarChar(255)
+  actividadEconomica                                                    String?                 @db.LongText
+  represLegal                                                           String?                 @db.VarChar(255)
+  dpiRepresLegal                                                        String?                 @db.VarChar(255)
+  numPatronalIgss                                                       String?                 @db.VarChar(255)
+  anioInicio                                                            DateTime?               @db.DateTime(0)
+  miercolesSanto                                                        Boolean?
+  outsourcing                                                           Boolean?
+  estado                                                                Boolean?
+  nombreComercialEmpresa                                                String?                 @db.VarChar(100)
+  fechaNacimientoRepresentante                                          DateTime?               @db.DateTime(0)
+  generoRepresentante                                                   String?                 @db.VarChar(50)
+  estadoCivilRepresentante                                              String?                 @db.VarChar(100)
+  nacionalidadRepresentante                                             Int?
+  departamentoActaNombramiento                                          Int?
+  municipioActaNombramiento                                             Int?
+  fechaAcreditacion                                                     DateTime?               @db.DateTime(0)
+  nombreNotario                                                         String?                 @db.VarChar(900)
+  registroMercantil                                                     String?                 @db.VarChar(10)
+  folioMercantil                                                        String?                 @db.VarChar(10)
+  libroMercantil                                                        String?                 @db.VarChar(10)
+  departamentoDomicilioRepresentante                                    Int?
+  fechaInicioCobro                                                      DateTime?               @db.DateTime(0)
+  Acceso_Planillas                                                      Acceso_Planillas[]
+  Area_Departamento                                                     Area_Departamento[]
+  Centro                                                                Centro[]
+  Colaborador                                                           Colaborador[]
+  Departamento_Empresa_departamentoToDepartamento                       Departamento?           @relation("Empresa_departamentoToDepartamento", fields: [departamento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Empresa_ibfk_1")
+  Municipio_Empresa_municipioToMunicipio                                Municipio?              @relation("Empresa_municipioToMunicipio", fields: [municipio], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Empresa_ibfk_2")
+  Pais                                                                  Pais?                   @relation(fields: [nacionalidadRepresentante], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Empresa_ibfk_3")
+  Departamento_Empresa_departamentoActaNombramientoToDepartamento       Departamento?           @relation("Empresa_departamentoActaNombramientoToDepartamento", fields: [departamentoActaNombramiento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Empresa_ibfk_4")
+  Municipio_Empresa_municipioActaNombramientoToMunicipio                Municipio?              @relation("Empresa_municipioActaNombramientoToMunicipio", fields: [municipioActaNombramiento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Empresa_ibfk_5")
+  Departamento_Empresa_departamentoDomicilioRepresentanteToDepartamento Departamento?           @relation("Empresa_departamentoDomicilioRepresentanteToDepartamento", fields: [departamentoDomicilioRepresentante], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Empresa_ibfk_6")
+  Factura                                                               Factura[]
+  Liquidacion                                                           Liquidacion[]
+  Planilla                                                              Planilla[]
+  PlanillasB14                                                          PlanillasB14[]
+  Planillas_Aguinaldo                                                   Planillas_Aguinaldo[]
+  PlazaPlanillaPago                                                     PlazaPlanillaPago[]
+  Puesto                                                                Puesto[]
+  RHA                                                                   RHA[]
+  RHB                                                                   RHB[]
+  RHP                                                                   RHP[]
+  Solicitud_IRTRA                                                       Solicitud_IRTRA[]
+  Tipo_Puesto                                                           Tipo_Puesto[]
+  Vacaciones_Pendientes                                                 Vacaciones_Pendientes[]
+
+  @@index([departamento], map: "departamento")
+  @@index([departamentoActaNombramiento], map: "departamentoActaNombramiento")
+  @@index([departamentoDomicilioRepresentante], map: "departamentoDomicilioRepresentante")
+  @@index([municipio], map: "municipio")
+  @@index([municipioActaNombramiento], map: "municipioActaNombramiento")
+  @@index([nacionalidadRepresentante], map: "nacionalidadRepresentante")
+}
+
+model Factura {
+  id        Int      @id @default(autoincrement())
+  periodo   DateTime @db.Date
+  estado    String   @db.VarChar(20)
+  factura   String   @db.LongText
+  idEmpresa String   @db.VarChar(50)
+  monto     String?  @db.VarChar(10)
+  Empresa   Empresa  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Factura_ibfk_1")
+
+  @@index([idEmpresa], map: "idEmpresa")
+}
+
+model Faltas {
+  id                       Int       @id @default(autoincrement())
+  idPlaza                  Int?
+  diasHabiles              Int?
+  diasSeptimos             Int?
+  fechaInicio              DateTime? @db.DateTime(0)
+  fechaFin                 DateTime? @db.DateTime(0)
+  fechaInicioPeriodo       DateTime? @db.DateTime(0)
+  fechaFinPeriodo          DateTime? @db.DateTime(0)
+  noDescontarUltimoSeptimo Boolean?
+  Plaza                    Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Faltas_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model HistorialPagos {
+  id                       Int       @id @default(autoincrement())
+  idPPP                    Int?
+  idPlaza                  Int?
+  idPlanilla               Int?
+  apellidos                String?   @db.VarChar(255)
+  nombre                   String?   @db.VarChar(255)
+  cuentaMonetaria          String?   @db.VarChar(255)
+  diasLaborados            Decimal?  @db.Decimal(10, 2)
+  numeroHorasExtras        Decimal?  @db.Decimal(10, 2)
+  numeroHorasExtrasSimples Decimal?  @db.Decimal(10, 2)
+  numeroHorasExrtrasDobles Decimal?  @db.Decimal(10, 2)
+  SalarioDevengado         Decimal?  @db.Decimal(10, 2)
+  bonifNoAfectaPasivos     Decimal?  @db.Decimal(10, 2)
+  horasExtrasSimples       Decimal?  @db.Decimal(10, 2)
+  HorasExrtrasDobles       Decimal?  @db.Decimal(10, 2)
+  comisiones               Decimal?  @db.Decimal(10, 2)
+  anticipos_Reintegros     Decimal?  @db.Decimal(10, 2)
+  totalDevengado           Decimal?  @db.Decimal(10, 2)
+  totalDeducciones         Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir           Decimal?  @db.Decimal(10, 2)
+  igss                     Decimal?  @db.Decimal(10, 2)
+  isr                      Decimal?  @db.Decimal(10, 2)
+  almuerzo                 Decimal?  @db.Decimal(10, 2)
+  medicina                 Decimal?  @db.Decimal(10, 2)
+  descuentoJudicial        Decimal?  @db.Decimal(10, 2)
+  bantrab                  Decimal?  @db.Decimal(10, 2)
+  BI                       Decimal?  @db.Decimal(10, 2)
+  anticipo                 Decimal?  @db.Decimal(10, 2)
+  boletoOrnato             Decimal?  @db.Decimal(10, 2)
+  otros                    Decimal?  @db.Decimal(10, 2)
+  isrAjuste                Decimal?  @db.Decimal(10, 2)
+  estado                   Boolean?
+  Planilla                 Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "HistorialPagos_ibfk_1")
+
+  @@index([idPlanilla], map: "idPlanilla")
+}
+
+model Historial_Salarios {
+  id                   Int       @id @default(autoincrement())
+  idPlaza              Int?
+  fechaInicioSalario   DateTime? @db.DateTime(0)
+  fechaFinalSalario    DateTime? @db.DateTime(0)
+  salarioBase          Decimal?  @db.Decimal(10, 2)
+  bonifNoAfectaPasivos Decimal?  @db.Decimal(10, 2)
+  bonifAfectaPasivos   Decimal?  @db.Decimal(10, 2)
+  Plaza                Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Historial_Salarios_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Licencias {
+  id                 Int       @id @default(autoincrement())
+  idPlaza            Int?
+  motivoLicencia     String?   @db.VarChar(255)
+  personaQueAutoriza String?   @db.VarChar(255)
+  fechaInicio        DateTime? @db.DateTime(0)
+  fechaFin           DateTime? @db.DateTime(0)
+  fechaInicioPeriodo DateTime? @db.DateTime(0)
+  fechaFinPeriodo    DateTime? @db.DateTime(0)
+  Plaza              Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Licencias_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Licencias_Denimville {
+  id          Int          @id @default(autoincrement())
+  plaza       Int?
+  tipo        String?      @db.LongText
+  fechaInicio DateTime?    @db.DateTime(0)
+  fechaFin    DateTime?    @db.DateTime(0)
+  autoriza    String?      @db.VarChar(255)
+  ingreso     DateTime?    @db.DateTime(0)
+  Plaza       Plaza?       @relation(fields: [plaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Licencias_Denimville_ibfk_1")
+  Colaborador Colaborador? @relation(fields: [autoriza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Licencias_Denimville_ibfk_2")
+
+  @@index([autoriza], map: "autoriza")
+  @@index([plaza], map: "plaza")
+}
+
+model Liquidacion {
+  id                                    Int       @id @default(autoincrement())
+  idPlaza                               Int?
+  codigoPlaza                           String?   @db.VarChar(255)
+  nombreCompleto                        String?   @db.VarChar(255)
+  puesto                                Int?
+  empresa                               String?   @db.VarChar(255)
+  motivoBaja                            String?   @db.VarChar(255)
+  fechaBaja                             DateTime? @db.DateTime(0)
+  doceSalarios                          String?   @db.LongText
+  fechaInicioIndemnizacion              DateTime? @db.DateTime(0)
+  fechaFinIndemnizacion                 DateTime? @db.DateTime(0)
+  salarioBasePromedioIndemnizacion      Decimal?  @db.Decimal(10, 2)
+  salarioBaseAnualizadoIndemnizacion    Decimal?  @db.Decimal(10, 2)
+  salarioExtraPromedioIndemnizacion     Decimal?  @db.Decimal(10, 2)
+  totalSalarioPromedioIndemnizacion     Decimal?  @db.Decimal(10, 2)
+  diasIndemnizacion                     Int?
+  totalIndemnizacion                    Decimal?  @db.Decimal(10, 2)
+  fechaInicioAguinaldo                  DateTime? @db.DateTime(0)
+  fechaFinAguinaldo                     DateTime? @db.DateTime(0)
+  salarioBasePromedioAguinaldo          Decimal?  @db.Decimal(10, 2)
+  diasAguinaldo                         Int?
+  totalAguinaldo                        Decimal?  @db.Decimal(10, 2)
+  fechaInicioBono                       DateTime? @db.DateTime(0)
+  fechaFinBono                          DateTime? @db.DateTime(0)
+  salarioBasePromedioBono               Decimal?  @db.Decimal(10, 2)
+  diasBono                              Int?
+  totalBono                             Decimal?  @db.Decimal(10, 2)
+  fechaInicioVacaciones                 DateTime? @db.DateTime(0)
+  fechaFinVacaciones                    DateTime? @db.DateTime(0)
+  salarioBasePromedioVacaciones         Decimal?  @db.Decimal(10, 2)
+  salarioExtraPromedioVacaciones        Decimal?  @db.Decimal(10, 2)
+  totalSalarioPromedioVacaciones        Decimal?  @db.Decimal(10, 2)
+  diasLaborados                         Int?
+  diasCorrespondientes                  Decimal?  @db.Decimal(10, 1)
+  diasGozados                           Decimal?  @db.Decimal(10, 1)
+  diasPendientesPago                    Decimal?  @db.Decimal(10, 1)
+  totalVacaciones                       Decimal?  @db.Decimal(10, 2)
+  totalPagoLiquidacion                  Decimal?  @db.Decimal(10, 2)
+  idEmpresa                             String?   @db.VarChar(70)
+  bonifAfectaPromedioIndemnizacion      Decimal   @default(0.00) @db.Decimal(10, 2)
+  bonifAfectaPromedioAnualIndemnizacion Decimal   @default(0.00) @db.Decimal(10, 2)
+  bonifAfectaPromedioAguinaldo          Decimal   @default(0.00) @db.Decimal(10, 2)
+  bonifAfectaPromedioBono               Decimal   @default(0.00) @db.Decimal(10, 2)
+  bonifAfectaPromedioVacaciones         Decimal   @default(0.00) @db.Decimal(10, 2)
+  Empresa                               Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Liquidacion_ibfk_2")
+  Plaza                                 Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Liquidacion_ibfk_3")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Liquidaciones_Adiciones {
+  id                 Int      @id @default(autoincrement())
+  idPlaza            Int?
+  tipoAdicion        String?  @db.VarChar(255)
+  descripcionAdicion String?  @db.VarChar(255)
+  montoAdicion       Decimal? @db.Decimal(10, 2)
+  estado             Boolean?
+  Plaza              Plaza?   @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Liquidaciones_Adiciones_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Municipio {
+  id                                                     Int           @id @default(autoincrement())
+  idDepartamento                                         Int?
+  nombreMunicipio                                        String?       @db.VarChar(255)
+  codigoMunicipio                                        String?       @db.VarChar(255)
+  igssId                                                 String?       @db.VarChar(2)
+  empleador_codigo                                       String?       @db.VarChar(10)
+  Centro                                                 Centro[]
+  Colaborador_Colaborador_municipioNacimientoToMunicipio Colaborador[] @relation("Colaborador_municipioNacimientoToMunicipio")
+  Colaborador_Colaborador_municipioDomicilioToMunicipio  Colaborador[] @relation("Colaborador_municipioDomicilioToMunicipio")
+  Colaborador_Colaborador_municipioVecindadToMunicipio   Colaborador[] @relation("Colaborador_municipioVecindadToMunicipio")
+  Empresa_Empresa_municipioToMunicipio                   Empresa[]     @relation("Empresa_municipioToMunicipio")
+  Empresa_Empresa_municipioActaNombramientoToMunicipio   Empresa[]     @relation("Empresa_municipioActaNombramientoToMunicipio")
+  Departamento                                           Departamento? @relation(fields: [idDepartamento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Municipio_ibfk_1")
+
+  @@index([idDepartamento], map: "idDepartamento")
+}
+
+model Orden_Carga {
+  id        String  @id @db.VarChar(70)
+  idEmpresa String? @db.VarChar(70)
+  tipo      String? @db.VarChar(70)
+  data      String? @db.MediumText
+}
+
+model Pais {
+  id               Int           @id @default(autoincrement())
+  nombrePais       String?       @db.VarChar(255)
+  codigo           String?       @db.VarChar(20)
+  empleador_codigo String?       @db.VarChar(5)
+  nacionalidad     String?       @db.VarChar(100)
+  Colaborador      Colaborador[]
+  Empresa          Empresa[]
+}
+
+model Perfiles {
+  id           Int           @id @default(autoincrement())
+  nombrePerfil String?       @db.VarChar(255)
+  permisos     String?       @db.LongText
+  Colaborador  Colaborador[]
+}
+
+model Permisos_Denimville {
+  id               Int          @id @default(autoincrement())
+  plaza            Int?
+  fechaYHoraInicio DateTime?    @db.DateTime(0)
+  fechaYHoraFin    DateTime?    @db.DateTime(0)
+  motivo           String?      @db.LongText
+  sinGoceDeSueldo  Boolean?
+  autoriza         String?      @db.VarChar(255)
+  ingreso          DateTime?    @db.DateTime(0)
+  Plaza            Plaza?       @relation(fields: [plaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Permisos_Denimville_ibfk_1")
+  Colaborador      Colaborador? @relation(fields: [autoriza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Permisos_Denimville_ibfk_2")
+
+  @@index([autoriza], map: "autoriza")
+  @@index([plaza], map: "plaza")
+}
+
+model Planilla {
+  id                       Int                     @id @default(autoincrement())
+  idEmpresa                String?                 @db.VarChar(70)
+  nombrePlanilla           String?                 @db.VarChar(255)
+  frecuenciaPago           Int?
+  sabadoSeptimo            Boolean?
+  quincenaDeDieciseis      Boolean?
+  banco                    Int?
+  numeroCuentaBanco        String?                 @db.VarChar(20)
+  estado                   String?                 @db.VarChar(70)
+  codigoActividadEconomica String?                 @db.VarChar(45)
+  turnosRotativos          Boolean?
+  HistorialPagos           HistorialPagos[]
+  Empresa                  Empresa?                @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Planilla_ibfk_1")
+  Banco                    Banco?                  @relation(fields: [banco], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Planilla_ibfk_2")
+  PlanillasB14             PlanillasB14[]
+  Planillas_Aguinaldo      Planillas_Aguinaldo[]
+  Plaza                    Plaza[]
+  RHA                      RHA[]
+  RHB                      RHB[]
+  RHP                      RHP[]
+  Vacaciones_Pendientes    Vacaciones_Pendientes[]
+
+  @@index([banco], map: "banco")
+  @@index([idEmpresa], map: "idEmpresa")
+}
+
+model Planilla_Vacaciones {
+  id                  Int       @id @default(autoincrement())
+  idPlaza             Int?
+  nombrePlanilla      String?   @db.VarChar(255)
+  primerApellido      String?   @db.VarChar(255)
+  segundoApellido     String?   @db.VarChar(255)
+  apellidoCasada      String?   @db.VarChar(255)
+  primerNombre        String?   @db.VarChar(255)
+  segundoNombre       String?   @db.VarChar(255)
+  otrosNombres        String?   @db.VarChar(255)
+  apellidos           String?   @db.VarChar(255)
+  nombres             String?   @db.VarChar(255)
+  formaPago           String?   @db.VarChar(255)
+  banco               String?   @db.VarChar(255)
+  numeroCuentaBanco   String?   @db.VarChar(255)
+  cuentaMonetaria     String?   @db.VarChar(255)
+  jubiladoIgss        Boolean?
+  periodoInicio       DateTime? @db.DateTime(0)
+  periodoFinal        DateTime? @db.DateTime(0)
+  fechaInicio         DateTime? @db.DateTime(0)
+  fechaFin            DateTime? @db.DateTime(0)
+  medioDia            Boolean?
+  salarioPromedio     Decimal?  @db.Decimal(10, 2)
+  salarioBase         String?   @db.VarChar(255)
+  precioDiaHabil      String?   @db.VarChar(255)
+  precioDiaSeptimo    String?   @db.VarChar(255)
+  diasHabiles         Decimal?  @db.Decimal(10, 2)
+  diasSeptimos        Decimal?  @db.Decimal(10, 2)
+  montoDiasHabiles    Decimal?  @db.Decimal(10, 2)
+  montoDiasSeptimos   Decimal?  @db.Decimal(10, 2)
+  montoTotal          Decimal?  @db.Decimal(10, 2)
+  montoBonosAPlanilla Decimal?  @db.Decimal(10, 2)
+  descuentoIgss       Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir      Decimal?  @db.Decimal(10, 2)
+  Mom                 Boolean?
+  GT                  Boolean?
+  estado              Boolean?
+  bonoAfectoPromedio  Decimal   @default(0.00) @db.Decimal(10, 2)
+  Plaza               Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Planilla_Vacaciones_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model PlanillasB14 {
+  id                Int       @id @default(autoincrement())
+  idPlaza           Int?
+  idPlanilla        Int?
+  idEmpresa         String?   @db.VarChar(70)
+  nombres           String?   @db.VarChar(255)
+  apellidos         String?   @db.VarChar(255)
+  fechaDeAlta       DateTime? @db.DateTime(0)
+  base1             Decimal?  @db.Decimal(10, 2)
+  base2             Decimal?  @db.Decimal(10, 2)
+  base3             Decimal?  @db.Decimal(10, 2)
+  base4             Decimal?  @db.Decimal(10, 2)
+  base5             Decimal?  @db.Decimal(10, 2)
+  base6             Decimal?  @db.Decimal(10, 2)
+  base7             Decimal?  @db.Decimal(10, 2)
+  base8             Decimal?  @db.Decimal(10, 2)
+  base9             Decimal?  @db.Decimal(10, 2)
+  base10            Decimal?  @db.Decimal(10, 2)
+  base11            Decimal?  @db.Decimal(10, 2)
+  base12            Decimal?  @db.Decimal(10, 2)
+  promedio          Decimal?  @db.Decimal(10, 2)
+  inicioB14         DateTime? @db.DateTime(0)
+  corteB14          DateTime? @db.DateTime(0)
+  dias              Int?
+  bono14            Decimal?  @db.Decimal(10, 2)
+  anticipo          Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir    Decimal?  @db.Decimal(10, 2)
+  meses             String?   @db.VarChar(255)
+  sumaSalariosBase  Decimal?  @db.Decimal(10, 2)
+  formaPago         String?   @db.VarChar(255)
+  banco             Int?
+  numeroCuentaBanco String?   @db.VarChar(255)
+  cuentaMonetaria   String?   @db.VarChar(255)
+  estado            Boolean?
+  Planilla          Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlanillasB14_ibfk_2")
+  Empresa           Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlanillasB14_ibfk_3")
+  Banco             Banco?    @relation(fields: [banco], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlanillasB14_ibfk_4")
+  Plaza             Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlanillasB14_ibfk_5")
+
+  @@index([banco], map: "banco")
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlanilla], map: "idPlanilla")
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Planillas_Aguinaldo {
+  id                Int       @id @default(autoincrement())
+  idPlaza           Int?
+  idPlanilla        Int?
+  nombres           String?   @db.VarChar(255)
+  apellidos         String?   @db.VarChar(255)
+  fechaIngreso      DateTime? @db.DateTime(0)
+  base1             Decimal?  @db.Decimal(10, 2)
+  base2             Decimal?  @db.Decimal(10, 2)
+  base3             Decimal?  @db.Decimal(10, 2)
+  base4             Decimal?  @db.Decimal(10, 2)
+  base5             Decimal?  @db.Decimal(10, 2)
+  base6             Decimal?  @db.Decimal(10, 2)
+  base7             Decimal?  @db.Decimal(10, 2)
+  base8             Decimal?  @db.Decimal(10, 2)
+  base9             Decimal?  @db.Decimal(10, 2)
+  base10            Decimal?  @db.Decimal(10, 2)
+  base11            Decimal?  @db.Decimal(10, 2)
+  base12            Decimal?  @db.Decimal(10, 2)
+  promedio          Decimal?  @db.Decimal(10, 2)
+  inicioAguinaldo   DateTime? @db.DateTime(0)
+  corteAguinaldo    DateTime? @db.DateTime(0)
+  dias              Int?
+  aguinaldo         Decimal?  @db.Decimal(10, 2)
+  anticipo          Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir    Decimal?  @db.Decimal(10, 2)
+  meses             String?   @db.VarChar(255)
+  sumaSalariosBase  Decimal?  @db.Decimal(10, 2)
+  formaPago         String?   @db.VarChar(255)
+  banco             Int?
+  numeroCuentaBanco String?   @db.VarChar(255)
+  cuentaMonetaria   String?   @db.VarChar(255)
+  estado            Boolean?
+  idEmpresa         String?   @db.VarChar(70)
+  Planilla          Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Planillas_Aguinaldo_ibfk_2")
+  Empresa           Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Planillas_Aguinaldo_ibfk_3")
+  Plaza             Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Planillas_Aguinaldo_ibfk_4")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlanilla], map: "idPlanilla")
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Plaza {
+  id                                     Int                                      @id @default(autoincrement())
+  codigoPlaza                            String?                                  @db.VarChar(70)
+  idColaborador                          String?                                  @db.VarChar(70)
+  idPlanilla                             Int?
+  estatus                                String?                                  @db.VarChar(255)
+  formaPago                              String?                                  @db.VarChar(255)
+  banco                                  Int?
+  numeroCuentaBanco                      String?                                  @db.VarChar(255)
+  fechaIngreso                           DateTime?                                @db.DateTime(0)
+  fechaBaja                              DateTime?                                @db.DateTime(0)
+  tipoBaja                               String?                                  @db.VarChar(255)
+  motivoBaja                             String?                                  @db.LongText
+  diasVacacionesGozados                  Float?                                   @db.Float
+  tipoContrato                           String?                                  @db.VarChar(255)
+  plazaTemporal                          Boolean?
+  fechaFiniquito                         DateTime?                                @db.DateTime(0)
+  pagarSeptimoContratacion               Boolean?
+  estado                                 Boolean?
+  centro                                 Int?
+  fechaFirmaContrato                     DateTime?                                @db.DateTime(0)
+  inicioContrato                         DateTime?                                @db.DateTime(0)
+  finContrato                            DateTime?                                @db.DateTime(0)
+  ciudadFirmaContrato                    String?                                  @db.VarChar(255)
+  tipoCuenta                             String?                                  @db.VarChar(15)
+  Anticipos                              Anticipos[]
+  Collaborador_Turno_Denimville          Collaborador_Turno_Denimville[]
+  DescuentoBancario                      DescuentoBancario[]
+  Faltas                                 Faltas[]
+  Historial_Salarios                     Historial_Salarios[]
+  Licencias                              Licencias[]
+  Licencias_Denimville                   Licencias_Denimville[]
+  Liquidacion                            Liquidacion[]
+  Liquidaciones_Adiciones                Liquidaciones_Adiciones[]
+  Permisos_Denimville                    Permisos_Denimville[]
+  Planilla_Vacaciones                    Planilla_Vacaciones[]
+  PlanillasB14                           PlanillasB14[]
+  Planillas_Aguinaldo                    Planillas_Aguinaldo[]
+  Colaborador                            Colaborador?                             @relation(fields: [idColaborador], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Plaza_ibfk_1")
+  Banco                                  Banco?                                   @relation(fields: [banco], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Plaza_ibfk_2")
+  Planilla                               Planilla?                                @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Plaza_ibfk_3")
+  Centro                                 Centro?                                  @relation(fields: [centro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Plaza_ibfk_7")
+  PlazaPlanillaPago                      PlazaPlanillaPago[]
+  Puesto                                 Puesto[]
+  Reintegros                             Reintegros[]
+  Suspenciones                           Suspenciones[]
+  Suspenciones_Disciplinarias            Suspenciones_Disciplinarias[]
+  Suspensiones_Denimville                Suspensiones_Denimville[]
+  Suspensiones_Disciplinarias_Denimville Suspensiones_Disciplinarias_Denimville[]
+  Trabajos_Anteriores                    Trabajos_Anteriores[]
+  Vacaciones_Denimville                  Vacaciones_Denimville[]
+
+  @@index([banco], map: "banco")
+  @@index([centro], map: "centro")
+  @@index([idColaborador], map: "idColaborador")
+  @@index([idPlanilla], map: "idPlanilla")
+}
+
+model PlazaPlanillaPago {
+  id                          Int       @id @default(autoincrement())
+  idPlaza                     Int?
+  nombrePlanilla              String?   @db.VarChar(255)
+  primerApellido              String?   @db.VarChar(255)
+  segundoApellido             String?   @db.VarChar(255)
+  apellidoCasada              String?   @db.VarChar(255)
+  primerNombre                String?   @db.VarChar(255)
+  segundoNombre               String?   @db.VarChar(255)
+  otrosNombres                String?   @db.VarChar(255)
+  apellidos                   String?   @db.VarChar(255)
+  nombres                     String?   @db.VarChar(255)
+  formaPago                   String?   @db.VarChar(255)
+  banco                       Int?
+  numeroCuentaBanco           String?   @db.VarChar(255)
+  cuentaMonetaria             String?   @db.VarChar(255)
+  jubiladoIgss                Boolean?
+  autorizaPagoCheque          Boolean?
+  periodoInicio               DateTime? @db.DateTime(0)
+  periodoFinal                DateTime? @db.DateTime(0)
+  periodo                     String?   @db.VarChar(255)
+  salarioBase                 Decimal?  @db.Decimal(10, 2)
+  bonifNoAfectaPasivos        Decimal?  @db.Decimal(10, 2)
+  bonifAfectaPasivos          Decimal?  @db.Decimal(10, 2)
+  diasLaborados               Decimal?  @db.Decimal(10, 2)
+  diasHabiles                 Decimal?  @db.Decimal(10, 2)
+  diasSeptimos                Decimal?  @db.Decimal(10, 2)
+  horasExtrasSimples          Decimal?  @db.Decimal(10, 2)
+  horasExtrasDobles           Decimal?  @db.Decimal(10, 2)
+  salarioBaseDevengado        Decimal?  @db.Decimal(10, 2)
+  bonifSalarioDevengado       Decimal?  @db.Decimal(10, 2)
+  bonoProdNoAfecto            Decimal?  @db.Decimal(10, 2)
+  bonoProdAfecto              Decimal?  @db.Decimal(10, 2)
+  bonificacion372001Devengado Decimal?  @db.Decimal(10, 2)
+  montoHorasExtrasSimples     Decimal?  @db.Decimal(10, 2)
+  montoHorasExtrasDobles      Decimal?  @db.Decimal(10, 2)
+  comisiones                  Decimal?  @db.Decimal(10, 2)
+  anticipo                    Decimal?  @db.Decimal(10, 2)
+  devolucionIsr               Decimal?  @db.Decimal(10, 2)
+  periodoDevolucionIsr        DateTime? @db.DateTime(0)
+  totalDevengado              Decimal?  @db.Decimal(10, 2)
+  igss                        Decimal?  @db.Decimal(10, 2)
+  descuentoIsr                Decimal?  @db.Decimal(10, 2)
+  descuentoMedicina           Decimal?  @db.Decimal(10, 2)
+  descuentoAlmuerzos          Decimal?  @db.Decimal(10, 2)
+  descuentoJudicial           Decimal?  @db.Decimal(10, 2)
+  descuentoAnticipo           Decimal?  @db.Decimal(10, 2)
+  descuentoCarneIrtra         Decimal?  @db.Decimal(10, 2)
+  descuentoUniformes          Decimal?  @db.Decimal(10, 2)
+  descuentoBoletoOrnato       Decimal?  @db.Decimal(10, 2)
+  descuentoBI                 Decimal?  @db.Decimal(10, 2)
+  descuentoIsrNoAplicado      Decimal?  @db.Decimal(10, 2)
+  periodoIsrNoAplicado        DateTime? @db.DateTime(0)
+  totalDeducciones            Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir              Decimal?  @db.Decimal(10, 2)
+  montoPagadoAjuste           Decimal?  @db.Decimal(10, 2)
+  fechaPagoAjuste             DateTime? @db.DateTime(0)
+  estado                      String?   @db.VarChar(70)
+  idEmpresa                   String?   @db.VarChar(70)
+  reintegro                   Decimal?  @db.Decimal(10, 2)
+  descuentoHoras              Decimal?  @db.Decimal(10, 2)
+  bonifHorasExtrasSimples     Decimal   @default(0.00) @db.Decimal(10, 2)
+  bonifHorasExtrasDobles      Decimal   @default(0.00) @db.Decimal(10, 2)
+  Banco                       Banco?    @relation(fields: [banco], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlazaPlanillaPago_ibfk_2")
+  Empresa                     Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlazaPlanillaPago_ibfk_3")
+  Plaza                       Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PlazaPlanillaPago_ibfk_4")
+
+  @@index([banco], map: "banco")
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Puesto {
+  id                    Int          @id @default(autoincrement())
+  idEmpresa             String?      @db.VarChar(70)
+  nombrePuesto          String?      @db.VarChar(255)
+  correlativo           Int?
+  ocupante              Int?
+  padre                 Int?
+  idTipoPuesto          Int?
+  jornadaLaboral        String?      @db.LongText
+  resumenJornada        String?      @db.LongText
+  jornadaTextual        String?      @db.LongText
+  resumenJornadaTextual String?      @db.LongText
+  Empresa               Empresa?     @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Puesto_ibfk_1")
+  Puesto                Puesto?      @relation("PuestoToPuesto", fields: [padre], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Puesto_ibfk_2")
+  other_Puesto          Puesto[]     @relation("PuestoToPuesto")
+  Plaza                 Plaza?       @relation(fields: [ocupante], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Puesto_ibfk_3")
+  Tipo_Puesto           Tipo_Puesto? @relation(fields: [idTipoPuesto], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Puesto_ibfk_4")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idTipoPuesto], map: "idTipoPuesto")
+  @@index([ocupante], map: "ocupante")
+  @@index([padre], map: "padre")
+}
+
+model RHA {
+  id             Int       @id @default(autoincrement())
+  idEmpresa      String?   @db.VarChar(70)
+  idPlanilla     Int?
+  nombrePlanilla String?   @db.VarChar(255)
+  inicioPeriodo  DateTime? @db.DateTime(0)
+  finPeriodo     DateTime? @db.DateTime(0)
+  aguinaldo      Decimal?  @db.Decimal(10, 2)
+  anticipo       Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir Decimal?  @db.Decimal(10, 2)
+  estado         Boolean?
+  Empresa        Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "RHA_ibfk_1")
+  Planilla       Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "RHA_ibfk_2")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlanilla], map: "idPlanilla")
+}
+
+model RHB {
+  id             Int       @id @default(autoincrement())
+  idEmpresa      String?   @db.VarChar(70)
+  idPlanilla     Int?
+  nombrePlanilla String?   @db.VarChar(255)
+  inicioPeriodo  DateTime? @db.DateTime(0)
+  finPeriodo     DateTime? @db.DateTime(0)
+  bono14         Decimal?  @db.Decimal(10, 2)
+  anticipo       Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir Decimal?  @db.Decimal(10, 2)
+  estado         Boolean?
+  Empresa        Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "RHB_ibfk_1")
+  Planilla       Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "RHB_ibfk_2")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlanilla], map: "idPlanilla")
+}
+
+model RHP {
+  id                       Int       @id @default(autoincrement())
+  idEmpresa                String?   @db.VarChar(70)
+  idPlanilla               Int?
+  nombrePlanilla           String?   @db.VarChar(255)
+  inicioPeriodoPlanilla    DateTime? @db.DateTime(0)
+  finPeriodoPlanilla       DateTime? @db.DateTime(0)
+  salarioBaseDevengado     Decimal?  @db.Decimal(10, 2)
+  bonifDecreto             Decimal?  @db.Decimal(10, 2)
+  comisiones               Decimal?  @db.Decimal(10, 2)
+  anticiposYreintegros     Decimal?  @db.Decimal(10, 2)
+  isr                      Decimal?  @db.Decimal(10, 2)
+  almuerzo                 Decimal?  @db.Decimal(10, 2)
+  medicina                 Decimal?  @db.Decimal(10, 2)
+  descuentoJudicial        Decimal?  @db.Decimal(10, 2)
+  bantrab                  Decimal?  @db.Decimal(10, 2)
+  bi                       Decimal?  @db.Decimal(10, 2)
+  boletoOrnato             Decimal?  @db.Decimal(10, 2)
+  otros                    Decimal?  @db.Decimal(10, 2)
+  isrAjuste                Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir           Decimal?  @db.Decimal(10, 2)
+  igss                     Decimal?  @db.Decimal(10, 2)
+  montoHorasExtrasSimples  Decimal?  @db.Decimal(10, 2)
+  montoHorasExtrasDobles   Decimal?  @db.Decimal(10, 2)
+  totalDeducciones         Decimal?  @db.Decimal(10, 2)
+  totalDevengado           Decimal?  @db.Decimal(10, 2)
+  igssVacaciones           Decimal?  @db.Decimal(10, 2)
+  totalDevengadoVacaciones Decimal?  @db.Decimal(10, 2)
+  liquidoRecibirVacaciones Decimal?  @db.Decimal(10, 2)
+  estado                   Boolean?
+  Empresa                  Empresa?  @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "RHP_ibfk_1")
+  Planilla                 Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "RHP_ibfk_2")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([idPlanilla], map: "idPlanilla")
+}
+
+model Referencias_Laborales {
+  id            Int     @id @default(autoincrement())
+  idEmpresa     String? @db.VarChar(70)
+  idColaborador String? @db.VarChar(70)
+  idPlaza       Int?
+  referencias   String? @db.MediumText
+}
+
+model Reintegros {
+  id                 Int       @id @default(autoincrement())
+  idPlaza            Int?
+  idPPP              Int?
+  gastosGenerales    Decimal?  @db.Decimal(10, 2)
+  kilometraje        Decimal?  @db.Decimal(10, 2)
+  celular            Decimal?  @db.Decimal(10, 2)
+  alimentacion       Decimal?  @db.Decimal(10, 2)
+  depreciacion       Decimal?  @db.Decimal(10, 2)
+  parqueos           Decimal?  @db.Decimal(10, 2)
+  carWash            Decimal?  @db.Decimal(10, 2)
+  actividades        Decimal?  @db.Decimal(10, 2)
+  liquidoRecibir     Decimal?  @db.Decimal(10, 2)
+  fechaInicioPeriodo DateTime? @db.DateTime(0)
+  fechaFinPeriodo    DateTime? @db.DateTime(0)
+  isr                Decimal?  @db.Decimal(10, 2)
+  anticipo           Decimal?  @db.Decimal(10, 2)
+  estado             Boolean?
+  Plaza              Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Reintegros_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Solicitud_IRTRA {
+  id             Int         @id @default(autoincrement())
+  tipo           String      @db.VarChar(20)
+  fechaSolicitud DateTime    @db.DateTime(0)
+  conyuge        Int         @db.TinyInt
+  firma          String      @db.LongText
+  idColaborador  String      @db.VarChar(100)
+  idEmpresa      String      @db.VarChar(100)
+  estado         String      @db.VarChar(30)
+  Colaborador    Colaborador @relation(fields: [idColaborador], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Solicitud_IRTRA_ibfk_1")
+  Empresa        Empresa     @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Solicitud_IRTRA_ibfk_2")
+
+  @@index([idColaborador], map: "idColaborador")
+  @@index([idEmpresa], map: "idEmpresa")
+}
+
+model Suspenciones {
+  id                 Int       @id @default(autoincrement())
+  idPlaza            Int?
+  fechaInicio        DateTime? @db.DateTime(0)
+  fechaFin           DateTime? @db.DateTime(0)
+  fechaInicioPeriodo DateTime? @db.DateTime(0)
+  fechaFinPeriodo    DateTime? @db.DateTime(0)
+  tipoSuspension     String?   @db.VarChar(255)
+  fechaDeAlta        DateTime? @db.DateTime(0)
+  Plaza              Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Suspenciones_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Suspenciones_Disciplinarias {
+  id                            Int       @id @default(autoincrement())
+  idPlaza                       Int?
+  fechaInicio                   DateTime? @db.DateTime(0)
+  fechaFin                      DateTime? @db.DateTime(0)
+  diasHabiles                   Int?
+  diasSeptimos                  Int?
+  fechaInicioPeriodo            DateTime? @db.DateTime(0)
+  fechaFinPeriodo               DateTime? @db.DateTime(0)
+  motivoSuspencionDisciplinaria String?   @db.LongText
+  noDescontarUltimoSeptimo      Boolean?
+  Plaza                         Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Suspenciones_Disciplinarias_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Suspensiones_Denimville {
+  id          Int          @id @default(autoincrement())
+  plaza       Int?
+  tipo        String?      @db.LongText
+  fechaInicio DateTime?    @db.Date
+  fechaFin    DateTime?    @db.Date
+  autoriza    String?      @db.VarChar(255)
+  ingreso     DateTime?    @db.DateTime(0)
+  Plaza       Plaza?       @relation(fields: [plaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Suspensiones_Denimville_ibfk_1")
+  Colaborador Colaborador? @relation(fields: [autoriza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Suspensiones_Denimville_ibfk_2")
+
+  @@index([autoriza], map: "autoriza")
+  @@index([plaza], map: "plaza")
+}
+
+model Suspensiones_Disciplinarias_Denimville {
+  id                 Int          @id @default(autoincrement())
+  plaza              Int?
+  tipo               String?      @db.LongText
+  fechaInicio        DateTime?    @db.Date
+  fechaFin           DateTime?    @db.Date
+  noDescontarSeptimo Boolean?
+  autoriza           String?      @db.VarChar(255)
+  ingreso            DateTime?    @db.DateTime(0)
+  Plaza              Plaza?       @relation(fields: [plaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Suspensiones_Disciplinarias_Denimville_ibfk_1")
+  Colaborador        Colaborador? @relation(fields: [autoriza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Suspensiones_Disciplinarias_Denimville_ibfk_2")
+
+  @@index([autoriza], map: "autoriza")
+  @@index([plaza], map: "plaza")
+}
+
+model Tipo_Puesto {
+  id                             Int           @id @default(autoincrement())
+  idEmpresa                      String?       @db.VarChar(70)
+  nombreTipo                     String?       @db.LongText
+  objetivo                       String?       @db.LongText
+  funcionesPrincipales           String?       @db.LongText
+  competencias                   String?       @db.LongText
+  educacion                      String?       @db.LongText
+  experienciaLaboral             String?       @db.LongText
+  habilidadeEspecificas          String?       @db.LongText
+  factoresAmbientalesyFisicos    String?       @db.LongText
+  informacionEspecifica          String?       @db.LongText
+  departamento                   String?       @db.VarChar(255)
+  codigoOcupacion                String?       @db.VarChar(25)
+  jornadaLaboral                 String?       @db.LongText
+  resumenJornada                 String?       @db.LongText
+  tipoPuestoJefe                 Int?
+  contractOptionalDefaultClauses String?       @db.VarChar(999)
+  contractCustomClauses          String?       @db.LongText
+  tiempoParcial                  Int?          @db.TinyInt
+  codigoOcupacionMintrab         String?       @db.VarChar(10)
+  Puesto                         Puesto[]
+  Empresa                        Empresa?      @relation(fields: [idEmpresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Tipo_Puesto_ibfk_1")
+  Tipo_Puesto                    Tipo_Puesto?  @relation("Tipo_PuestoToTipo_Puesto", fields: [tipoPuestoJefe], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Tipo_Puesto_ibfk_2")
+  other_Tipo_Puesto              Tipo_Puesto[] @relation("Tipo_PuestoToTipo_Puesto")
+
+  @@index([idEmpresa], map: "idEmpresa")
+  @@index([tipoPuestoJefe], map: "tipoPuestoJefe")
+}
+
+model Trabajos_Anteriores {
+  id            Int       @id @default(autoincrement())
+  idPlaza       Int?
+  ingresos      Decimal?  @db.Decimal(12, 2)
+  igss          Decimal?  @db.Decimal(12, 2)
+  isrDescontado Decimal?  @db.Decimal(12, 2)
+  periodoInicio DateTime? @db.DateTime(0)
+  periodoFin    DateTime? @db.DateTime(0)
+  Plaza         Plaza?    @relation(fields: [idPlaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Trabajos_Anteriores_ibfk_1")
+
+  @@index([idPlaza], map: "idPlaza")
+}
+
+model Turnos {
+  id                            Int                             @id @default(autoincrement())
+  codigo                        String                          @unique(map: "codigo") @db.VarChar(255)
+  descripcion                   String                          @db.LongText
+  Collaborador_Turno_Denimville Collaborador_Turno_Denimville[]
+}
+
+model Vacaciones_Denimville {
+  id                 Int          @id @default(autoincrement())
+  plaza              Int?
+  fechaInicio        DateTime?    @db.Date
+  fechaFin           DateTime?    @db.Date
+  medioDia           Boolean?
+  periodoEnQueAplica String?      @db.VarChar(255)
+  autoriza           String?      @db.VarChar(255)
+  ingreso            DateTime?    @db.DateTime(0)
+  Plaza              Plaza?       @relation(fields: [plaza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vacaciones_Denimville_ibfk_1")
+  Colaborador        Colaborador? @relation(fields: [autoriza], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vacaciones_Denimville_ibfk_2")
+
+  @@index([autoriza], map: "autoriza")
+  @@index([plaza], map: "plaza")
+}
+
+model Vacaciones_Pendientes {
+  id             Int       @id @default(autoincrement())
+  codigoPlaza    String?   @db.VarChar(70)
+  idPlanilla     Int?
+  fechaInicio    DateTime? @db.DateTime(0)
+  fechaFin       DateTime? @db.DateTime(0)
+  periodoInicio  DateTime? @db.DateTime(0)
+  periodoFinal   DateTime? @db.DateTime(0)
+  diaSolicitud   DateTime? @db.DateTime(0)
+  medioDia       Boolean?
+  diasPendientes Int?
+  empresa        String?   @db.VarChar(70)
+  estado         String?   @db.VarChar(70)
+  Empresa        Empresa?  @relation(fields: [empresa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vacaciones_Pendientes_ibfk_1")
+  Planilla       Planilla? @relation(fields: [idPlanilla], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Vacaciones_Pendientes_ibfk_2")
+
+  @@index([empresa], map: "empresa")
+  @@index([idPlanilla], map: "idPlanilla")
+}
+
+model auth {
+  id                String  @id @db.VarChar(70)
+  emailPersonal     String? @db.VarChar(255)
+  contrasenaUsuario String? @db.VarChar(255)
+}
+
+model colaborador {
+  id                                     Int       @id @default(autoincrement())
+  primerNombre                           String    @db.VarChar(255)
+  segundoNombre                          String    @db.VarChar(255)
+  primerApellido                         String    @db.VarChar(255)
+  segundoApellido                        String    @db.VarChar(255)
+  nacionalidad                           Int
+  departamentoNacimiento                 Int
+  municipioNacimiento                    Int
+  fechaNacimiento                        DateTime  @db.DateTime(0)
+  codigoNacimiento                       String    @db.VarChar(255)
+  genero                                 String    @db.VarChar(255)
+  etnia                                  String    @db.VarChar(255)
+  religion                               String    @db.VarChar(255)
+  estadoCivil                            String    @db.VarChar(255)
+  direccionDomicilio                     String    @db.VarChar(255)
+  departamentoDomicilio                  Int
+  municipioDomicilio                     Int
+  zonaDomicilio                          String    @db.VarChar(255)
+  codigoDomicilio                        String    @db.VarChar(255)
+  telefonoCasa                           String    @db.VarChar(255)
+  telefonoCelular                        String    @db.VarChar(255)
+  telefonoCelular2                       String    @db.VarChar(255)
+  emailPersonal                          String    @db.VarChar(255)
+  emailEmpresa                           String    @db.VarChar(255)
+  personasQueDependenDirectamente        Int
+  personasQueDependenIndirectamente      Int
+  personasQueVivenConUsted               Int
+  lateralidad                            String    @db.VarChar(255)
+  tallaPlayera                           String    @db.VarChar(255)
+  tallaPantalon                          String    @db.VarChar(255)
+  tallaZapatos                           String    @db.VarChar(255)
+  dpi                                    String    @db.VarChar(255)
+  departamentoVecindad                   Int
+  municipioVecindad                      Int
+  codigoVecindad                         String    @db.VarChar(255)
+  numeroAfiliacionIgss                   String    @db.VarChar(255)
+  numeroAfiliacionIrtra                  String    @db.VarChar(255)
+  jubiladoIgss                           Int       @db.TinyInt
+  seguroMedico                           Int       @db.TinyInt
+  seguroVida                             Int       @db.TinyInt
+  nit                                    String    @db.VarChar(255)
+  pasaporte                              String    @db.VarChar(255)
+  permisoTrabajo                         String    @db.VarChar(255)
+  licenciaMoto                           Int       @db.TinyInt
+  documentoLicenciaMoto                  String    @db.VarChar(255)
+  fechaVencimientoLicenciaMoto           DateTime  @db.DateTime(0)
+  licenciaVehiculo                       Int       @db.TinyInt
+  documentoLicenciaVehiculo              String    @db.VarChar(255)
+  claseLicenciaVehiculo                  String    @db.VarChar(255)
+  fechaVencimientoLicenciaVehiculo       DateTime  @db.DateTime(0)
+  fechaEmisionIrtra                      DateTime  @db.DateTime(0)
+  estatura                               String    @db.VarChar(255)
+  peso                                   String    @db.VarChar(255)
+  colorTez                               String    @db.VarChar(255)
+  contextura                             String    @db.VarChar(255)
+  colorOjos                              String    @db.VarChar(255)
+  tipoCabello                            String    @db.VarChar(255)
+  padresYconyuge                         String    @db.VarChar(255)
+  hijosYhermanos                         String    @db.VarChar(255)
+  cantidadHijos                          String    @db.VarChar(255)
+  familiaresCompaniaYcontactosEmergencia String    @db.VarChar(255)
+  contrasenaUsuario                      String    @db.VarChar(255)
+  perfilUsuario                          String    @db.VarChar(255)
+  foto                                   String    @db.VarChar(255)
+  empresaActiva                          String    @db.VarChar(255)
+  estado                                 String    @db.VarChar(255)
+  fechaInicioRecuex                      DateTime? @db.DateTime(0)
+}
